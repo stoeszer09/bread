@@ -20,7 +20,7 @@ breads.get('/:arrayIndex', (req, res) => {
       bread:Bread[req.params.arrayIndex]
     })
   } else {
-    res.send('404 Bread not found.')
+    res.render('error404')
   }
 })
 
