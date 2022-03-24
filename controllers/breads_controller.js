@@ -39,10 +39,14 @@ breads.get('/new', (req, res) => {
 
 // EDIT 
 breads.get('/:indexArray/edit', (req, res) => {
-  Bread.findById(req.params.indexArray)
-    .then(foundBread => {
-      res.render('edit', {
-        bread: foundBread
+  Baker.find()
+    .then(foundBakers => {
+      Bread.findById(req.params.indexArray)
+      .then(foundBread => {
+        res.render('edit', {
+          bread: foundBread,
+          bakers: foundBakers
+        })
       })
     })
 })
@@ -50,6 +54,7 @@ breads.get('/:indexArray/edit', (req, res) => {
 // SHOW
 breads.get('/:arrayIndex', (req, res) => {
   Bread.findById(req.params.arrayIndex)
+    .populate('baker')
     .then(foundBread => {
       res.render('show', {bread: foundBread})
     })
