@@ -1,9 +1,9 @@
 const express = require('express')
 const { redirect } = require('express/lib/response')
-const bread = require('../models/bread.js')
 const breads = express.Router()
 const Bread = require('../models/bread.js')
 const breadSeed = require('../models/bread_seed.js')
+const Baker = require('../models/baker.js')
 
 // INDEX
 breads.get('/', (req, res) => {
@@ -29,7 +29,12 @@ breads.get('/data/seed', (req, res) => {
 
 // NEW
 breads.get('/new', (req, res) => {
-  res.render('new')
+  Baker.find()
+    .then(foundBakers => {
+      res.render('new', {
+        bakers: foundBakers
+      })
+    })
 })
 
 // EDIT 
