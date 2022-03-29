@@ -6,65 +6,66 @@ const breadSeed = require('../models/bread_seed.js')
 const Baker = require('../models/baker.js')
 
 // INDEX
-breads.get('/', (req, res) => {
-  Baker.find()
-    .then(foundBakers => {
-      Bread.find()
-      .then(foundBreads => {
-        res.render('Index', { 
-          breads: foundBreads,
-          bakers: foundBakers,
-          title: 'Index Page' 
-        })
-      })
-      .catch(err => {
-        res.send('error404')
-      })
+breads.get('/', async (req, res) => {
+  try {
+    const foundBakers = await Baker.find().lean()
+    const foundBreads = await Bread.find().limit(15).lean()
+    res.render('Index', { 
+      breads: foundBreads,
+      bakers: foundBakers,
+      title: 'Index Page' 
     })
+  } catch(e) {
+    res.send('error404')
+  }
 })
 
 // SEED
-breads.get('/data/seed', (req, res) => {
-  Bread.insertMany(breadSeed)
-    .then(createdBreads => {
-      res.redirect('/breads')
-    })
+breads.get('/data/seed', async (req, res) => {
+  try {
+    const createdBreads = await Bread.insertMany(breadSeed)
+    res.redirect('/breads')
+  } catch(e) {
+    res.redirect('error404')
+  }
 })
 
 // NEW
-breads.get('/new', (req, res) => {
-  Baker.find()
-    .then(foundBakers => {
-      res.render('new', {
-        bakers: foundBakers
-      })
+breads.get('/new', async (req, res) => {
+  try {
+    const foundBakers = await Baker.find()
+    res.render('new', {
+      bakers: foundBakers
     })
+  } catch (e) {
+    res.render('error404')
+  }
 })
 
 // EDIT 
-breads.get('/:indexArray/edit', (req, res) => {
-  Baker.find()
-    .then(foundBakers => {
-      Bread.findById(req.params.indexArray)
-      .then(foundBread => {
-        res.render('edit', {
-          bread: foundBread,
-          bakers: foundBakers
-        })
-      })
+breads.get('/:indexArray/edit', async (req, res) => {
+  try {
+    const foundBakers = await Baker.find()
+    const foundBread = await Bread.findById(req.params.indexArray)
+    res.render('edit', {
+      bread: foundBread,
+      bakers: foundBakers
     })
+  } catch(e) {
+    res.render('error404')
+  }
 })
 
 // SHOW
-breads.get('/:arrayIndex', (req, res) => {
-  Bread.findById(req.params.arrayIndex)
-    .populate('baker')
-    .then(foundBread => {
-      res.render('show', {bread: foundBread})
+breads.get('/:arrayIndex', async (req, res) => {
+  try {
+    const foundBread = await Bread.findById(req.params.arrayIndex)
+    res.render('show', {
+      bread: foundBread
     })
-    .catch(err => {
-      res.send('error404')
-    })
+  } catch(e) {
+    res.send('error404')
+  }
 })
 
 // UPDATE

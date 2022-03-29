@@ -13,23 +13,30 @@ const bakerSeedData = require('../models/baker_seed.js')
 // })
 
 // INDEX
-baker.get('/', (req, res) => {
-  Baker.find()
-    .populate('breads')
-    .then(foundBakers => {
-      res.send(foundBakers)
-    })
+baker.get('/', async (req, res) => {
+  try {
+    const foundBakers = await Baker.find()
+    res.send(foundBakers)
+  } catch(e) {
+    res.render('error404')
+  }
 })
 
 // SHOW
-baker.get('/:id', (req, res) => {
-  Baker.findById(req.params.id)
-    .populate('breads')
-    .then(foundBaker => {
-      res.render('bakerShow', {
-        baker: foundBaker
-      })
+// show 
+baker.get('/:id', async (req, res) => {
+  try {
+    const foundBaker = await Baker.findById(req.params.id)
+    await foundBaker.populate({
+      path: 'breads',
+      options: { limit: 2 }
     })
+    res.render('bakerShow', {
+      baker: foundBaker
+    })
+  } catch(e) {
+    res.render('error404')
+  }
 })
 
 // DELETE
